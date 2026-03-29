@@ -1,0 +1,109 @@
+{
+  "portfolio": {
+    "name": "why-A股投资组合",
+    "created_at": "2026-03-29",
+    "update_frequency": "daily",
+    "report_time": "15:35",
+    "currency": "CNY",
+    "position_size": "2手/股",
+    "strategy": "成长型主题投资"
+  },
+  "holdings": [
+    {
+      "code": "300101.SZ",
+      "name": "振芯科技",
+      "sector": "军工电子",
+      "theme": "北斗导航/军工芯片",
+      "shares": 200,
+      "cost_basis": null,
+      "current_price": 20.18,
+      "market_value": null,
+      "weight": null
+    },
+    {
+      "code": "300769.SZ",
+      "name": "德方纳米",
+      "sector": "锂电池材料",
+      "theme": "磷酸铁锂/新能源",
+      "shares": 200,
+      "cost_basis": null,
+      "current_price": 47.54,
+      "market_value": null,
+      "weight": null
+    },
+    {
+      "code": "600372.SH",
+      "name": "中航机载",
+      "sector": "军工航空",
+      "theme": "航空装备/军机",
+      "shares": 200,
+      "cost_basis": null,
+      "current_price": 12.96,
+      "market_value": null,
+      "weight": null
+    },
+    {
+      "code": "002407.SZ",
+      "name": "多氟多",
+      "sector": "氟化工",
+      "theme": "六氟磷酸锂/新材料",
+      "shares": 200,
+      "cost_basis": null,
+      "current_price": 28.48,
+      "market_value": null,
+      "weight": null
+    },
+    {
+      "code": "002326.SZ",
+      "name": "永太科技",
+      "sector": "氟化工",
+      "theme": "电解液/医药中间体",
+      "shares": 200,
+      "cost_basis": null,
+      "current_price": 23.21,
+      "market_value": null,
+      "weight": null
+    }
+  ],
+  "signals": {
+    "buy": {
+      "icon": "🟢",
+      "action": "买入/加仓",
+      "description": "技术面走强/超卖反弹/突破确认"
+    },
+    "hold": {
+      "icon": "🟡",
+      "action": "不动/持有",
+      "description": "震荡/观望/方向不明"
+    },
+    "sell": {
+      "icon": "🔴",
+      "action": "卖出/减仓",
+      "description": "技术面走弱/超买/破位/止损"
+    },
+    "watch": {
+      "icon": "🔵",
+      "action": "密切关注",
+      "description": "出现变盘信号/关键价位"
+    }
+  },
+  "model": {
+    "version": "1.0",
+    "indicators": ["MA", "MACD", "KDJ", "RSI", "CCI", "BOLL"],
+    "timeframes": ["日线"],
+    "learning": {
+      "enabled": true,
+      "track_accuracy": true,
+      "update_frequency": "weekly",
+      "optimization_target": "sharpe_ratio"
+    }
+  },
+  "alerts": {
+    "price_change_threshold": 0.05,
+    "volume_spike_threshold": 2.0,
+    "kdj_overbought": 80,
+    "kdj_oversold": 20,
+    "rsi_overbought": 70,
+    "rsi_oversold": 30
+  }
+}

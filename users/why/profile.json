@@ -1,0 +1,71 @@
+{
+  "user_id": "why",
+  "nickname": "why",
+  "created_at": "2025-01-13",
+  "directions": {
+    "direction-1": {
+      "name": "新能源微网 - EMS能量管理",
+      "category": "professional",
+      "description": "本质工作：能量管理控制器的产品实现、控制算法、拓扑与模型",
+      "focus_areas": [
+        "EMS能量管理策略",
+        "控制算法（MPC、VSG、下垂控制等）",
+        "拓扑结构（DC/AC耦合、光储柴架构）",
+        "建模与仿真（Simulink、PSCAD等）",
+        "构网型技术（Grid-Forming）"
+      ],
+      "company_context": "新能源公司，业务涉及光储柴充微网",
+      "role": "能量管理控制器产品实现、控制、算法",
+      "update_frequency": "daily",
+      "preferred_time": "09:00",
+      "sources": ["学术期刊", "行业报告", "产品手册", "标准规范"],
+      "data_paths": {
+        "briefs": "/root/.openclaw/workspace/users/why/direction-1-ems/briefs/",
+        "technical_docs": "/root/.openclaw/workspace/users/why/direction-1-ems/tech-docs/",
+        "models": "/root/.openclaw/workspace/users/why/direction-1-ems/models/",
+        "references": "/root/.openclaw/workspace/users/why/direction-1-ems/references/",
+        "projects": "/root/.openclaw/workspace/users/why/direction-1-ems/projects/"
+      },
+      "active_projects": [
+        {
+          "name": "Cot",
+          "type": "光储柴微网",
+          "status": "进行中",
+          "focus": "EMS定制策略实现",
+          "path": "/root/.openclaw/workspace/users/why/direction-1-ems/projects/cot/"
+        }
+      ]
+    },
+    "direction-2": {
+      "name": "A股投资",
+      "category": "personal_finance",
+      "description": "个人投资：A股炒股，2021年入场，目前有持仓，经历过亏损",
+      "focus_areas": [
+        "持仓跟踪与分析",
+        "每日复盘",
+        "技术指标（MA/MACD/KDJ/RSI）",
+        "基本面分析",
+        "开盘前舆情",
+        "政策与宏观"
+      ],
+      "market": "A股",
+      "entry_year": 2021,
+      "current_status": "有持仓，历史有亏损",
+      "trading_style": "待确认", 
+      "update_frequency": "daily",
+      "preferred_time": "15:30",
+      "data_paths": {
+        "portfolio": "/root/.openclaw/workspace/users/why/direction-2-a-share/portfolio/",
+        "daily_review": "/root/.openclaw/workspace/users/why/direction-2-a-share/daily/",
+        "analysis": "/root/.openclaw/workspace/users/why/direction-2-a-share/analysis/",
+        "watchlist": "/root/.openclaw/workspace/users/why/direction-2-a-share/watchlist.json"
+      }
+    }
+  },
+  "preferences": {
+    "language": "zh-CN",
+    "technical_depth": "professional",
+    "output_format": "structured",
+    "cross_direction_analysis": true
+  }
+}
