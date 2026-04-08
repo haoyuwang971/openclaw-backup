@@ -1,0 +1,534 @@
+{
+  "_description": "Cot EMS 模块化任务清单 - 基于ai-dev文档系列",
+  "_version": "1.0",
+  "_last_updated": "2026-04-08",
+  
+  "project": {
+    "name": "Cot EMS",
+    "description": "缅甸光储柴微网能源管理系统",
+    "hardware": "WL-EMS-1000-M",
+    "location": "缅甸"
+  },
+
+  "modules": [
+    {
+      "id": "M01",
+      "name": "设备通信模块",
+      "description": "Modbus/DLT645通信驱动，设备数据接入",
+      "priority": "Must",
+      "dependencies": [],
+      "related_docs": ["00-Context.md", "01-PRD.md(FR-001)", "02-Domain-Model.md"],
+      "tasks": [
+        {
+          "id": "M01-T01",
+          "name": "Modbus-TCP主站实现",
+          "description": "实现PCS/BAM的Modbus-TCP通信",
+          "status": "pending",
+          "estimated_hours": 16,
+          "assignee": null
+        },
+        {
+          "id": "M01-T02",
+          "name": "Modbus-RTU主站实现",
+          "description": "实现MPPT/温控仪的Modbus-RTU通信",
+          "status": "pending",
+          "estimated_hours": 12,
+          "assignee": null
+        },
+        {
+          "id": "M01-T03",
+          "name": "DLT645电表协议实现",
+          "description": "实现关口表DLT645协议",
+          "status": "pending",
+          "estimated_hours": 8,
+          "assignee": null
+        },
+        {
+          "id": "M01-T04",
+          "name": "DI/DO驱动开发",
+          "description": "实现STS/ATS/柴发DO控制",
+          "status": "pending",
+          "estimated_hours": 8,
+          "assignee": null
+        },
+        {
+          "id": "M01-T05",
+          "name": "设备数据模型定义",
+          "description": "统一定义设备数据结构",
+          "status": "pending",
+          "estimated_hours": 4,
+          "assignee": null
+        },
+        {
+          "id": "M01-T06",
+          "name": "通信故障检测与恢复",
+          "description": "超时检测、重连机制",
+          "status": "pending",
+          "estimated_hours": 8,
+          "assignee": null
+        }
+      ]
+    },
+    {
+      "id": "M02",
+      "name": "数据采集与存储模块",
+      "description": "实时数据采集、断点续传、数据存储",
+      "priority": "Must",
+      "dependencies": ["M01"],
+      "related_docs": ["01-PRD.md(FR-001~003)", "03-Functional-Spec.md"],
+      "tasks": [
+        {
+          "id": "M02-T01",
+          "name": "实时数据采集引擎",
+          "description": "秒级/100ms级数据采集调度",
+          "status": "pending",
+          "estimated_hours": 12,
+          "assignee": null
+        },
+        {
+          "id": "M02-T02",
+          "name": "内存数据缓存",
+          "description": "Redis/内存缓存实现",
+          "status": "pending",
+          "estimated_hours": 8,
+          "assignee": null
+        },
+        {
+          "id": "M02-T03",
+          "name": "本地SQLite存储",
+          "description": "历史数据本地存储",
+          "status": "pending",
+          "estimated_hours": 8,
+          "assignee": null
+        },
+        {
+          "id": "M02-T04",
+          "name": "断点续传机制",
+          "description": "断网检测、本地缓存、恢复补传",
+          "status": "pending",
+          "estimated_hours": 16,
+          "assignee": null
+        },
+        {
+          "id": "M02-T05",
+          "name": "云端MQTT同步",
+          "description": "MQTT客户端、数据上行",
+          "status": "pending",
+          "estimated_hours": 12,
+          "assignee": null
+        }
+      ]
+    },
+    {
+      "id": "M03",
+      "name": "状态机引擎",
+      "description": "并离网/并柴发状态流转",
+      "priority": "Must",
+      "dependencies": ["M01"],
+      "related_docs": ["01-PRD.md(FR-007)", "04-State-Machine.md", "05-Technical-Design.md"],
+      "tasks": [
+        {
+          "id": "M03-T01",
+          "name": "状态机框架实现",
+          "description": "状态定义、转换表、事件驱动",
+          "status": "pending",
+          "estimated_hours": 16,
+          "assignee": null
+        },
+        {
+          "id": "M03-T02",
+          "name": "C1-C6条件评估",
+          "description": "实现各状态转换条件判断",
+          "status": "pending",
+          "estimated_hours": 12,
+          "assignee": null
+        },
+        {
+          "id": "M03-T03",
+          "name": "状态切换动作",
+          "description": "功率归零、STS控制、模式切换",
+          "status": "pending",
+          "estimated_hours": 12,
+          "assignee": null
+        },
+        {
+          "id": "M03-T04",
+          "name": "状态机容错",
+          "description": "防抖、故障锁定、恢复机制",
+          "status": "pending",
+          "estimated_hours": 8,
+          "assignee": null
+        },
+        {
+          "id": "M03-T05",
+          "name": "状态监控接口",
+          "description": "状态查询、转换记录",
+          "status": "pending",
+          "estimated_hours": 4,
+          "assignee": null
+        }
+      ]
+    },
+    {
+      "id": "M04",
+      "name": "功率控制模块",
+      "description": "PCS功率分配、MPPT功率限制",
+      "priority": "Must",
+      "dependencies": ["M01", "M03"],
+      "related_docs": ["01-PRD.md(FR-019~020)", "05-Technical-Design.md"],
+      "tasks": [
+        {
+          "id": "M04-T01",
+          "name": "PCS簇控制逻辑",
+          "description": "开机/关机顺序、主从控制",
+          "status": "pending",
+          "estimated_hours": 16,
+          "assignee": null
+        },
+        {
+          "id": "M04-T02",
+          "name": "PCS功率分配",
+          "description": "簇内均分、主从协调",
+          "status": "pending",
+          "estimated_hours": 12,
+          "assignee": null
+        },
+        {
+          "id": "M04-T03",
+          "name": "MPPT功率限制",
+          "description": "根据电池需求动态限制PV",
+          "status": "pending",
+          "estimated_hours": 12,
+          "assignee": null
+        },
+        {
+          "id": "M04-T04",
+          "name": "VF模式控制",
+          "description": "离网电压源模式",
+          "status": "pending",
+          "estimated_hours": 16,
+          "assignee": null
+        },
+        {
+          "id": "M04-T05",
+          "name": "PCS故障复位",
+          "description": "单台/批量复位",
+          "status": "pending",
+          "estimated_hours": 4,
+          "assignee": null
+        }
+      ]
+    },
+    {
+      "id": "M05",
+      "name": "策略引擎",
+      "description": "绿电消纳、备电、柴发联动策略",
+      "priority": "Must",
+      "dependencies": ["M01", "M03", "M04"],
+      "related_docs": ["01-PRD.md(FR-004~007)", "03-Functional-Spec.md"],
+      "tasks": [
+        {
+          "id": "M05-T01",
+          "name": "手动模式实现",
+          "description": "人工功率设置、权限控制",
+          "status": "pending",
+          "estimated_hours": 8,
+          "assignee": null
+        },
+        {
+          "id": "M05-T02",
+          "name": "绿电消纳策略",
+          "description": "负载跟随、PV最大化消纳",
+          "status": "pending",
+          "estimated_hours": 16,
+          "assignee": null
+        },
+        {
+          "id": "M05-T03",
+          "name": "备电策略",
+          "description": "SOC阈值管理、备电恢复",
+          "status": "pending",
+          "estimated_hours": 12,
+          "assignee": null
+        },
+        {
+          "id": "M05-T04",
+          "name": "柴发联动策略",
+          "description": "自动启停、并机控制",
+          "status": "pending",
+          "estimated_hours": 16,
+          "assignee": null
+        },
+        {
+          "id": "M05-T05",
+          "name": "策略优先级管理",
+          "description": "安全保护优先、策略叠加",
+          "status": "pending",
+          "estimated_hours": 8,
+          "assignee": null
+        }
+      ]
+    },
+    {
+      "id": "M06",
+      "name": "保护模块",
+      "description": "防逆流、需量、SOC均衡保护",
+      "priority": "Must",
+      "dependencies": ["M01", "M04", "M05"],
+      "related_docs": ["01-PRD.md(FR-008~010)", "05-Technical-Design.md"],
+      "tasks": [
+        {
+          "id": "M06-T01",
+          "name": "防逆流保护",
+          "description": "功率限制、持续逆流切换",
+          "status": "pending",
+          "estimated_hours": 16,
+          "assignee": null
+        },
+        {
+          "id": "M06-T02",
+          "name": "需量保护",
+          "description": "变压器过载保护",
+          "status": "pending",
+          "estimated_hours": 12,
+          "assignee": null
+        },
+        {
+          "id": "M06-T03",
+          "name": "SOC均衡控制",
+          "description": "多簇SOC均衡（狭义）",
+          "status": "pending",
+          "estimated_hours": 12,
+          "assignee": null
+        },
+        {
+          "id": "M06-T04",
+          "name": "单体电压保护",
+          "description": "充放电截止电压保护",
+          "status": "pending",
+          "estimated_hours": 8,
+          "assignee": null
+        },
+        {
+          "id": "M06-T05",
+          "name": "DOD保护",
+          "description": "SOC上下限保护",
+          "status": "pending",
+          "estimated_hours": 8,
+          "assignee": null
+        }
+      ]
+    },
+    {
+      "id": "M07",
+      "name": "告警与事件模块",
+      "description": "告警分级、事件记录",
+      "priority": "Must",
+      "dependencies": ["M01", "M02"],
+      "related_docs": ["01-PRD.md(FR-011~013)"],
+      "tasks": [
+        {
+          "id": "M07-T01",
+          "name": "告警分级系统",
+          "description": "紧急/重要/一般三级告警",
+          "status": "pending",
+          "estimated_hours": 8,
+          "assignee": null
+        },
+        {
+          "id": "M07-T02",
+          "name": "告警处理流程",
+          "description": "本地+云端通知、确认机制",
+          "status": "pending",
+          "estimated_hours": 12,
+          "assignee": null
+        },
+        {
+          "id": "M07-T03",
+          "name": "告警抑制策略",
+          "description": "切换期间抑制、去重",
+          "status": "pending",
+          "estimated_hours": 8,
+          "assignee": null
+        },
+        {
+          "id": "M07-T04",
+          "name": "事件记录系统",
+          "description": "状态变化、操作记录",
+          "status": "pending",
+          "estimated_hours": 8,
+          "assignee": null
+        }
+      ]
+    },
+    {
+      "id": "M08",
+      "name": "用户界面模块",
+      "description": "本地HMI、Web界面",
+      "priority": "Should",
+      "dependencies": ["M02"],
+      "related_docs": ["01-PRD.md(FR-014~015)"],
+      "tasks": [
+        {
+          "id": "M08-T01",
+          "name": "本地HMI框架",
+          "description": "Qt/Web前端框架",
+          "status": "pending",
+          "estimated_hours": 24,
+          "assignee": null
+        },
+        {
+          "id": "M08-T02",
+          "name": "概览页开发",
+          "description": "功率流向图、关键参数",
+          "status": "pending",
+          "estimated_hours": 16,
+          "assignee": null
+        },
+        {
+          "id": "M08-T03",
+          "name": "设备页开发",
+          "description": "设备详情、参数设置",
+          "status": "pending",
+          "estimated_hours": 16,
+          "assignee": null
+        },
+        {
+          "id": "M08-T04",
+          "name": "策略页开发",
+          "description": "模式切换、参数配置",
+          "status": "pending",
+          "estimated_hours": 12,
+          "assignee": null
+        },
+        {
+          "id": "M08-T05",
+          "name": "Web服务后端",
+          "description": "REST API、WebSocket",
+          "status": "pending",
+          "estimated_hours": 20,
+          "assignee": null
+        }
+      ]
+    },
+    {
+      "id": "M09",
+      "name": "系统管理模块",
+      "description": "用户权限、OTA升级",
+      "priority": "Should",
+      "dependencies": [],
+      "related_docs": ["01-PRD.md(FR-016~018)"],
+      "tasks": [
+        {
+          "id": "M09-T01",
+          "name": "用户权限管理",
+          "description": "RBAC权限模型",
+          "status": "pending",
+          "estimated_hours": 12,
+          "assignee": null
+        },
+        {
+          "id": "M09-T02",
+          "name": "OTA升级",
+          "description": "固件/前端在线升级",
+          "status": "pending",
+          "estimated_hours": 16,
+          "assignee": null
+        },
+        {
+          "id": "M09-T03",
+          "name": "配置管理",
+          "description": "参数备份/恢复、配置导入导出",
+          "status": "pending",
+          "estimated_hours": 8,
+          "assignee": null
+        }
+      ]
+    },
+    {
+      "id": "M10",
+      "name": "测试验证",
+      "description": "单元测试、集成测试、验收测试",
+      "priority": "Must",
+      "dependencies": ["M01~M09"],
+      "related_docs": ["07-Test-Spec.md"],
+      "tasks": [
+        {
+          "id": "M10-T01",
+          "name": "单元测试",
+          "description": "各模块单元测试≥80%覆盖率",
+          "status": "pending",
+          "estimated_hours": 40,
+          "assignee": null
+        },
+        {
+          "id": "M10-T02",
+          "name": "集成测试",
+          "description": "模块间接口测试",
+          "status": "pending",
+          "estimated_hours": 32,
+          "assignee": null
+        },
+        {
+          "id": "M10-T03",
+          "name": "系统测试",
+          "description": "端到端功能测试",
+          "status": "pending",
+          "estimated_hours": 40,
+          "assignee": null
+        },
+        {
+          "id": "M10-T04",
+          "name": "现场验收测试",
+          "description": "用户场景验证",
+          "status": "pending",
+          "estimated_hours": 24,
+          "assignee": null
+        }
+      ]
+    }
+  ],
+
+  "milestones": [
+    {
+      "id": "V1.0-MVP",
+      "name": "MVP版本",
+      "description": "核心功能：数据采集、状态机、手动模式、基础保护",
+      "modules": ["M01", "M02", "M03", "M04", "M06", "M07"],
+      "estimated_days": 45,
+      "dependencies": []
+    },
+    {
+      "id": "V1.1-Strategy",
+      "name": "策略版本",
+      "description": "增加：绿电消纳、备电、柴发联动策略",
+      "modules": ["M05"],
+      "estimated_days": 20,
+      "dependencies": ["V1.0-MVP"]
+    },
+    {
+      "id": "V1.2-UI",
+      "name": "UI版本",
+      "description": "增加：本地HMI、Web界面",
+      "modules": ["M08", "M09"],
+      "estimated_days": 25,
+      "dependencies": ["V1.1-Strategy"]
+    },
+    {
+      "id": "V1.3-Release",
+      "name": "正式发布",
+      "description": "完整测试、验收、文档",
+      "modules": ["M10"],
+      "estimated_days": 20,
+      "dependencies": ["V1.2-UI"]
+    }
+  ],
+
+  "summary": {
+    "total_modules": 10,
+    "total_tasks": 58,
+    "total_estimated_hours": 584,
+    "must_have_tasks": 42,
+    "should_have_tasks": 16
+  }
+}
