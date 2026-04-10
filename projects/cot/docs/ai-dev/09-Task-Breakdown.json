@@ -196,9 +196,17 @@
         {
           "id": "M04-T03",
           "name": "MPPT功率限制",
-          "description": "根据电池需求动态限制PV",
+          "description": "根据电池需求动态限制PV功率，EMS直接控制各台46110功率百分比（非主从分配）",
           "status": "pending",
           "estimated_hours": 12,
+          "assignee": null
+        },
+        {
+          "id": "M04-T03A",
+          "name": "MPPT运行模式管理",
+          "description": "自动运行模式处理：通讯关机后显式开机、shutdown_by_EMS标志维护、开机条件检查",
+          "status": "pending",
+          "estimated_hours": 8,
           "assignee": null
         },
         {
