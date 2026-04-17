@@ -1,0 +1,842 @@
+# 06-API-Contract.yml - 接口契约 (API Contract)
+
+> **文档版本**: 1.0  
+> **最后更新**: 2026-04-08  
+> **关联文档**: [01-PRD.md](./01-PRD.md), [05-Technical-Design.md](./05-Technical-Design.md)
+
+---
+
+openapi: 3.0.3
+info:
+  title: Cot EMS API
+  description: |
+    Cot EMS (Energy Management System) REST API 定义。
+    用于本地HMI、Web前端和云端系统的数据交互。
+  version: 1.0.0
+  contact:
+    name: Cot EMS Team
+
+servers:
+  - url: http://{ems-host}/api/v1
+    description: EMS本地服务器
+    variables:
+      ems-host:
+        default: 192.168.1.100
+        description: EMS控制器IP地址
+
+# ==================== 安全定义 ====================
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  # ==================== 通用响应 ====================
+  responses:
+    UnauthorizedError:
+      description: 认证失败或Token过期
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    ForbiddenError:
+      description: 权限不足
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    NotFoundError:
+      description: 资源不存在
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    ValidationError:
+      description: 请求参数校验失败
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== 数据模型 ====================
+  schemas:
+    # ----- 基础类型 -----
+    Timestamp:
+      type: string
+      format: date-time
+      description: ISO 8601格式时间戳
+      example: "2026-04-08T10:30:00+08:00"
+    
+    PowerValue:
+      type: number
+      description: 功率值（瓦特）
+      example: 150000
+    
+    Percentage:
+      type: number
+      minimum: 0
+      maximum: 100
+      description: 百分比
+      example: 85.5
+    
+    # ----- 响应基类 -----
+    BaseResponse:
+      type: object
+      required:
+        - success
+        - timestamp
+      properties:
+        success:
+          type: boolean
+          description: 操作是否成功
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+        message:
+          type: string
+          description: 响应消息
+    
+    ErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          required:
+            - error_code
+          properties:
+            success:
+              example: false
+            error_code:
+              type: string
+              description: 错误代码
+              example: "PERMISSION_DENIED"
+            error_details:
+              type: object
+              description: 详细错误信息
+    
+    # ----- 系统状态 -----
+    SystemState:
+      type: string
+      enum:
+        - STANDBY
+        - OFF_GRID
+        - GRID_CONNECTED
+        - GEN_CONNECTED
+        - FAULT
+      description: 系统运行状态
+    
+    OperationMode:
+      type: string
+      enum:
+        - MANUAL
+        - GREEN_POWER
+        - BACKUP
+        - STANDBY
+      description: 操作策略模式
+    
+    # ----- 设备数据 -----
+    DeviceStatus:
+      type: string
+      enum:
+        - ONLINE
+        - OFFLINE
+        - FAULT
+        - UNKNOWN
+    
+    Device:
+      type: object
+      required:
+        - id
+        - type
+        - status
+      properties:
+        id:
+          type: string
+          description: 设备唯一ID
+          example: "PCS-1"
+        type:
+          type: string
+          enum: [PCS, MPPT, BAM, METER, STS, ATS, DG]
+          description: 设备类型
+        name:
+          type: string
+          description: 设备名称
+          example: "储能变流器1#"
+        cluster_id:
+          type: integer
+          description: 所属簇ID
+          example: 1
+        status:
+          $ref: '#/components/schemas/DeviceStatus'
+        comm_status:
+          type: boolean
+          description: 通信状态
+        last_update:
+          $ref: '#/components/schemas/Timestamp'
+    
+    PCSDevice:
+      allOf:
+        - $ref: '#/components/schemas/Device'
+        - type: object
+          properties:
+            power:
+              $ref: '#/components/schemas/PowerValue'
+            mode:
+              type: string
+              enum: [PQ, VF, STANDBY]
+            voltage:
+              type: number
+              description: 交流电压(V)
+            current:
+              type: number
+              description: 交流电流(A)
+            soc:
+              $ref: '#/components/schemas/Percentage'
+            temperature:
+              type: number
+              description: 设备温度(°C)
+    
+    BAMDevice:
+      allOf:
+        - $ref: '#/components/schemas/Device'
+        - type: object
+          properties:
+            soc:
+              $ref: '#/components/schemas/Percentage'
+            soh:
+              $ref: '#/components/schemas/Percentage'
+            voltage:
+              type: number
+              description: 直流总电压(V)
+            current:
+              type: number
+              description: 直流电流(A)
+            max_cell_voltage:
+              type: number
+              description: 最高单体电压(mV)
+            min_cell_voltage:
+              type: number
+              description: 最低单体电压(mV)
+            max_temperature:
+              type: number
+              description: 最高温度(°C)
+    
+    MPPTDevice:
+      allOf:
+        - $ref: '#/components/schemas/Device'
+        - type: object
+          properties:
+            input_voltage:
+              type: number
+              description: 光伏输入电压(V)
+            input_current:
+              type: number
+              description: 光伏输入电流(A)
+            input_power:
+              type: number
+              description: 光伏输入功率(kW)
+            output_power:
+              type: number
+              description: 直流输出功率(kW)
+            power_percentage:
+              type: number
+              description: 功率限制百分比(0~170%)
+            run_mode:
+              type: string
+              enum: [AUTO, REMOTE]
+              description: 运行模式（AUTO=自动运行，REMOTE=远程控制）
+            shutdown_by_ems:
+              type: boolean
+              description: EMS是否主动关机（影响下次开机逻辑）
+            allow_startup:
+              type: boolean
+              description: 是否允许启机（45200状态字bit8）
+            fault_auto_reset:
+              type: boolean
+              description: 故障自动复位使能状态
+    
+    # ----- 系统概览 -----
+    SystemOverview:
+      type: object
+      required:
+        - state
+        - mode
+        - timestamp
+      properties:
+        state:
+          $ref: '#/components/schemas/SystemState'
+        mode:
+          $ref: '#/components/schemas/OperationMode'
+        pv_power:
+          $ref: '#/components/schemas/PowerValue'
+        load_power:
+          $ref: '#/components/schemas/PowerValue'
+        grid_power:
+          $ref: '#/components/schemas/PowerValue'
+        battery_power:
+          $ref: '#/components/schemas/PowerValue'
+        soc_cluster1:
+          $ref: '#/components/schemas/Percentage'
+        soc_cluster2:
+          $ref: '#/components/schemas/Percentage'
+        diesel_generator_running:
+          type: boolean
+          description: 柴发运行状态
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+    
+    # ----- 功率设置 -----
+    PowerSetpointRequest:
+      type: object
+      required:
+        - target_power
+      properties:
+        target_power:
+          $ref: '#/components/schemas/PowerValue'
+          description: 目标功率（正值放电，负值充电）
+        pcs_ids:
+          type: array
+          items:
+            type: string
+          description: 目标PCS列表，为空则应用到所有PCS
+          example: ["PCS-1", "PCS-2"]
+    
+    # ----- 模式切换 -----
+    ModeSwitchRequest:
+      type: object
+      required:
+        - mode
+      properties:
+        mode:
+          $ref: '#/components/schemas/OperationMode'
+        params:
+          type: object
+          description: 模式特定参数
+    
+    # ----- 告警 -----
+    AlarmLevel:
+      type: string
+      enum: [CRITICAL, MAJOR, MINOR, INFO]
+      description: 告警级别
+    
+    Alarm:
+      type: object
+      required:
+        - id
+        - level
+        - message
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: 告警唯一ID
+        level:
+          $ref: '#/components/schemas/AlarmLevel'
+        code:
+          type: string
+          description: 告警代码
+          example: "PCS_COMM_LOST"
+        message:
+          type: string
+          description: 告警消息
+        source:
+          type: string
+          description: 告警来源设备
+        timestamp:
+          $ref: '#/components/schemas/Timestamp'
+        acknowledged:
+          type: boolean
+          description: 是否已确认
+        acknowledged_by:
+          type: string
+          description: 确认人
+        acknowledged_at:
+          $ref: '#/components/schemas/Timestamp'
+    
+    # ----- 历史数据 -----
+    HistoricalDataRequest:
+      type: object
+      required:
+        - start_time
+        - end_time
+        - data_points
+      properties:
+        start_time:
+          $ref: '#/components/schemas/Timestamp'
+        end_time:
+          $ref: '#/components/schemas/Timestamp'
+        data_points:
+          type: array
+          items:
+            type: string
+            enum: [pv_power, load_power, grid_power, battery_power, soc_cluster1, soc_cluster2]
+        interval:
+          type: integer
+          description: 数据间隔（秒）
+          default: 60
+
+# ==================== API 路径 ====================
+paths:
+  # ----- 系统状态 -----
+  /status:
+    get:
+      summary: 获取系统实时状态
+      description: 获取EMS系统当前运行状态、功率数据等
+      tags:
+        - System
+      responses:
+        '200':
+          description: 成功获取系统状态
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/SystemOverview'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  
+  /state:
+    get:
+      summary: 获取系统状态机状态
+      description: 获取详细的状态机状态和转换条件
+      tags:
+        - System
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          current_state:
+                            $ref: '#/components/schemas/SystemState'
+                          available_transitions:
+                            type: array
+                            items:
+                              type: string
+                          conditions:
+                            type: object
+                            description: 各条件状态(C1-C6)
+  
+  # ----- 模式管理 -----
+  /mode:
+    get:
+      summary: 获取当前操作模式
+      description: 获取EMS当前运行的策略模式
+      tags:
+        - Mode
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          current_mode:
+                            $ref: '#/components/schemas/OperationMode'
+                          available_modes:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/OperationMode'
+    
+    post:
+      summary: 切换操作模式
+      description: 切换EMS操作策略模式，需要操作员权限
+      tags:
+        - Mode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModeSwitchRequest'
+      responses:
+        '200':
+          description: 模式切换成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  
+  # ----- 功率控制 -----
+  /power:
+    get:
+      summary: 获取当前功率设置
+      description: 获取PCS当前功率和模式
+      tags:
+        - Power
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          total_power:
+                            $ref: '#/components/schemas/PowerValue'
+                          pcs_powers:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                pcs_id:
+                                  type: string
+                                power:
+                                  $ref: '#/components/schemas/PowerValue'
+                                mode:
+                                  type: string
+    
+    post:
+      summary: 设置PCS功率（手动模式）
+      description: 仅在手动模式下有效，设置PCS目标功率
+      tags:
+        - Power
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PowerSetpointRequest'
+      responses:
+        '200':
+          description: 设置成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+        '400':
+          description: 非手动模式或参数无效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  
+  # ----- 设备管理 -----
+  /devices:
+    get:
+      summary: 获取设备列表
+      description: 获取所有接入设备的列表和状态
+      tags:
+        - Devices
+      parameters:
+        - name: type
+          in: query
+          description: 按设备类型过滤
+          schema:
+            type: string
+            enum: [PCS, MPPT, BAM, METER, STS, ATS, DG]
+        - name: cluster_id
+          in: query
+          description: 按簇ID过滤
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Device'
+  
+  /devices/{device_id}:
+    get:
+      summary: 获取设备详情
+      description: 获取指定设备的详细数据
+      tags:
+        - Devices
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      data:
+                        oneOf:
+                          - $ref: '#/components/schemas/PCSDevice'
+                          - $ref: '#/components/schemas/BAMDevice'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+    
+    post:
+      summary: 设备控制操作
+      description: 对设备执行控制操作（启动、停止、复位等）
+      tags:
+        - Devices
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - action
+              properties:
+                action:
+                  type: string
+                  enum: [start, stop, reset, clear_fault]
+                params:
+                  type: object
+      responses:
+        '200':
+          description: 操作成功
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  
+  # ----- 柴发控制 -----
+  /diesel-generator:
+    get:
+      summary: 获取柴发状态
+      description: 获取柴油发电机当前状态和运行参数
+      tags:
+        - Diesel Generator
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          running:
+                            type: boolean
+                          auto_mode:
+                            type: boolean
+                          start_count:
+                            type: integer
+                          total_runtime:
+                            type: integer
+                            description: 总运行时间(分钟)
+                          fuel_level:
+                            $ref: '#/components/schemas/Percentage'
+    
+    post:
+      summary: 柴发启停控制
+      description: 手动启动或停止柴油发电机
+      tags:
+        - Diesel Generator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - action
+              properties:
+                action:
+                  type: string
+                  enum: [start, stop]
+                force:
+                  type: boolean
+                  description: 强制操作（绕过自动逻辑）
+                  default: false
+      responses:
+        '200':
+          description: 操作已执行
+        '400':
+          description: 操作不允许（如自动模式下）
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  
+  # ----- 告警管理 -----
+  /alarms:
+    get:
+      summary: 获取告警列表
+      description: 获取当前活跃告警或历史告警
+      tags:
+        - Alarms
+      parameters:
+        - name: level
+          in: query
+          description: 按级别过滤
+          schema:
+            $ref: '#/components/schemas/AlarmLevel'
+        - name: active_only
+          in: query
+          description: 仅返回未消除告警
+          schema:
+            type: boolean
+            default: true
+        - name: start_time
+          in: query
+          description: 历史告警开始时间
+          schema:
+            type: string
+            format: date-time
+        - name: end_time
+          in: query
+          description: 历史告警结束时间
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Alarm'
+    
+    post:
+      summary: 确认告警
+      description: 批量确认告警
+      tags:
+        - Alarms
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - alarm_ids
+              properties:
+                alarm_ids:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: 确认成功
+
+  # ----- 历史数据 -----
+  /data/historical:
+    post:
+      summary: 查询历史数据
+      description: 查询系统历史运行数据
+      tags:
+        - Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HistoricalDataRequest'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            timestamp:
+                              $ref: '#/components/schemas/Timestamp'
+                            values:
+                              type: object
+                              additionalProperties:
+                                type: number
+  
+  /data/export:
+    post:
+      summary: 导出历史数据
+      description: 导出指定时间范围的数据为CSV
+      tags:
+        - Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - start_time
+                - end_time
+              properties:
+                start_time:
+                  $ref: '#/components/schemas/Timestamp'
+                end_time:
+                  $ref: '#/components/schemas/Timestamp'
+                format:
+                  type: string
+                  enum: [csv, json]
+                  default: csv
+      responses:
+        '200':
+          description: 导出成功
+          content:
+            text/csv:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: object
+
+# ==================== 变更记录 ====================
+# 版本 | 日期       | 变更内容
+# 1.0  | 2026-04-08 | 初始版本，定义v1.0 API契约
