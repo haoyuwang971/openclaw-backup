@@ -1,16 +1,125 @@
 {
-  "version": "1.0",
+  "version": "2.0",
   "created_at": "2025-01-13",
-  "updated_at": "2025-01-13",
+  "updated_at": "2026-04-30",
   "owner": "why",
   "account": "A股",
-  "positions": [],
+  "positions": [
+    {
+      "code": "600745.SH",
+      "name": "闻泰科技",
+      "shares": 300,
+      "cost_basis": 85.00,
+      "current_price": 28.12,
+      "market_value": 8436,
+      "unrealized_pnl": -17064,
+      "pnl_rate": -0.669,
+      "sector": "半导体/消费电子",
+      "notes": "2026-04-30被*ST，停牌中，5月6日复牌。成本85，停牌价28.12，浮亏约67%。审计机构出具无法表示意见，退市风险警示。"
+    },
+    {
+      "code": "300769.SZ",
+      "name": "德方纳米",
+      "shares": 200,
+      "cost_basis": 9.00,
+      "current_price": 47.54,
+      "market_value": 9508,
+      "unrealized_pnl": 7708,
+      "pnl_rate": 4.282,
+      "sector": "锂电池材料",
+      "notes": "磷酸铁锂正极材料"
+    },
+    {
+      "code": "002407.SZ",
+      "name": "多氟多",
+      "shares": 300,
+      "cost_basis": 124.00,
+      "current_price": 28.48,
+      "market_value": 8544,
+      "unrealized_pnl": -28656,
+      "pnl_rate": -0.770,
+      "sector": "氟化工/六氟磷酸锂",
+      "notes": "六氟磷酸锂龙头，成本124高位套牢"
+    },
+    {
+      "code": "002709.SZ",
+      "name": "天赐材料",
+      "shares": 200,
+      "cost_basis": 83.00,
+      "current_price": 60.51,
+      "market_value": 12102,
+      "unrealized_pnl": -4498,
+      "pnl_rate": -0.271,
+      "sector": "电解液/锂电池材料",
+      "notes": "电解液龙头，成本83"
+    },
+    {
+      "code": "300101.SZ",
+      "name": "振芯科技",
+      "shares": 600,
+      "cost_basis": 7.00,
+      "current_price": 20.18,
+      "market_value": 12108,
+      "unrealized_pnl": 7908,
+      "pnl_rate": 1.887,
+      "sector": "军工电子",
+      "notes": "北斗导航/军工芯片，成本7，目前盈利"
+    },
+    {
+      "code": "600372.SH",
+      "name": "中航机载",
+      "shares": 800,
+      "cost_basis": 18.00,
+      "current_price": 12.96,
+      "market_value": 10368,
+      "unrealized_pnl": -4032,
+      "pnl_rate": -0.280,
+      "sector": "军工航空",
+      "notes": "航空装备/军机"
+    },
+    {
+      "code": "002326.SZ",
+      "name": "永太科技",
+      "shares": 400,
+      "cost_basis": 81.00,
+      "current_price": 23.21,
+      "market_value": 9284,
+      "unrealized_pnl": -23116,
+      "pnl_rate": -0.714,
+      "sector": "氟化工/电解液",
+      "notes": "电解液/医药中间体，成本81高位套牢"
+    },
+    {
+      "code": "603260.SH",
+      "name": "合盛硅业",
+      "shares": 200,
+      "cost_basis": 64.00,
+      "current_price": 44.60,
+      "market_value": 8920,
+      "unrealized_pnl": -3880,
+      "pnl_rate": -0.303,
+      "sector": "有机硅/工业硅",
+      "notes": "有机硅龙头"
+    },
+    {
+      "code": "600438.SH",
+      "name": "通威股份",
+      "shares": 300,
+      "cost_basis": 42.00,
+      "current_price": 17.37,
+      "market_value": 5211,
+      "unrealized_pnl": -7389,
+      "pnl_rate": -0.441,
+      "sector": "光伏/饲料",
+      "notes": "硅料+电池片+饲料"
+    }
+  ],
   "summary": {
-    "total_cost": 0,
-    "total_market_value": 0,
-    "total_profit_loss": 0,
-    "profit_loss_rate": 0
+    "total_cost": 157500,
+    "total_market_value": 94481,
+    "total_profit_loss": -63019,
+    "profit_loss_rate": -0.400
   },
-  "notes": "2021年入市，历史有亏损，当前持仓待补充",
+  "notes": "2021年入市，历史有亏损，当前持仓9只。重仓新能源材料股（德方、多氟多、天赐、永太、合盛、通威），合计6只。军工2只（振芯、中航机载）。半导体1只（闻泰，已*ST）。",
   "tags": ["方向2", "A股", "持仓"]
 }
